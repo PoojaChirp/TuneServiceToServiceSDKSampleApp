@@ -1,9 +1,5 @@
 package com.tune.pooja.simplecalculator.s2s;
 
-import android.telecom.Call;
-
-import org.apache.http.client.utils.URLEncodedUtils;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.time.Instant;
@@ -22,13 +18,13 @@ public class Request {
         String consumerKey = "";
         String apiKey = "";
         String timestamp = String.valueOf(Instant.now().getEpochSecond());
-        String host = "xyz.measure.mobileapptracking.com";
+        String host = "199221.measure.mobileapptracking.com";
         String httpMethod = "POST";
-        String signature = generateSignature(apiKey, httpMethod, host, "", timestamp, "");
         String path = "/serve";
         Map<String, String> params = getParams(event);
-        Map<String, String> headers = getHeaders(consumerKey, signature, timestamp);
         String url = "https://" + host + path + urlEncodeUTF8(params);
+        String signature = generateSignature(apiKey, httpMethod, host, url, timestamp, "");
+        Map<String, String> headers = getHeaders(consumerKey, signature, timestamp);
         new CallAPI().execute(url, headers);
         return false;
     }
