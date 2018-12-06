@@ -10,6 +10,10 @@ import android.widget.TextView;
 import com.tune.ITune;
 import com.tune.Tune;
 import com.tune.TuneEvent;
+import com.tune.pooja.simplecalculator.s2s.Request;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -115,7 +119,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.btnResult:
                 cur =  Double.valueOf(editValues.getText().toString());
-                calculate(sign,cur,prev);
+                try {
+
+                        calculate(sign,cur,prev);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 editValues.setText(null);
                     break;
 
@@ -170,7 +180,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         txtRes.setText(editText.getText());
     }
 
-    private void calculate(String operation, double number, double prevNum) {
+    private void calculate(String operation, double number, double prevNum) throws Exception {
        // Variable to store the resultant value of the calc
         double value =0;
 
@@ -196,6 +206,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             ITune tune = Tune.getInstance();
             tune.setUserId("userId");
             tune.measureEvent(new TuneEvent(TuneEvent.LEVEL_ACHIEVED).withLevel(5));
+            //S2S implementation
+            new Request().post("math_op_completed");
         }
     }
 
