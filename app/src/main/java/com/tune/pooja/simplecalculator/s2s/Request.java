@@ -1,8 +1,18 @@
 package com.tune.pooja.simplecalculator.s2s;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.time.Instant;
+import java.util.AbstractMap;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,36 +22,71 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class Request {
 
-    public boolean post(String event) throws Exception {
+    public AbstractMap.Entry<String, Map<String, String>> post(String event) throws Exception {
 
 
         String consumerKey = "";
         String apiKey = "";
-        String timestamp = String.valueOf(Instant.now().getEpochSecond());
+//        String timestamp = String.valueOf(Instant.now().getEpochSecond());
+        String timestamp = "1544306821";//String.valueOf(Instant.now().getEpochSecond());
         String host = "199221.measure.mobileapptracking.com";
         String httpMethod = "POST";
-        String path = "/serve";
         Map<String, String> params = getParams(event);
-        String url = "https://" + host + path + urlEncodeUTF8(params);
-        String signature = generateSignature(apiKey, httpMethod, host, url, timestamp, "");
+        String path = "/serve"+ "?"+ urlEncodeUTF8(params);
+        String url = "https://" + host + path;
+        String signature = generateSignature(apiKey, httpMethod, host, path, timestamp, "");
         Map<String, String> headers = getHeaders(consumerKey, signature, timestamp);
-        new CallAPI().execute( headers, url);
-        return true;
+        //new CallAPI().execute( headers, url);
+//        sendRequest(headers,url);
+
+        AbstractMap.Entry<String, Map<String, String>> rtnval=new AbstractMap.SimpleEntry<>(url, headers);
+
+        return rtnval;
+    }
+
+
+    public StringRequest prepareRequest(final Map<String, String> headers, String urlString){
+
+            StringRequest strRequest = new StringRequest(com.android.volley.Request.Method.POST, urlString,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            System.out.println(response);
+
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            try {
+                                System.out.println(new String(error.networkResponse.data, "utf-8"));
+                            } catch (UnsupportedEncodingException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }) {
+                @Override
+                public Map<String, String> getHeaders() {
+
+                    return headers;
+                }
+            };
+            return strRequest;
+
     }
 
 
     public Map<String, String> getParams(String event) {
 
         Map<String, String> rtnval = new HashMap<>();
-        rtnval.put("action", "conversion");
-        rtnval.put("action", "conversion");
-        rtnval.put("advertiser_id", "199221");
+        rtnval.put("site_event_name", event);
         rtnval.put("device_ip", "199.75.210.200");
         rtnval.put("site_id", "142455");
-        rtnval.put("site_event_name", event);
-        rtnval.put("site_event_items", "[{\"name\":\"apples\",\"quantity\":\"3\",\"unit_price\":\".5\"},{\"name\":\"oranges\",\"quantity\",\"4\",\"value\":\"8\"}]");
-        rtnval.put("ios_ifa", "JKI2JO-5958-8188-1BRLO-87322RYAN5693");
         rtnval.put("response_format", "json");
+        rtnval.put("advertiser_id", "199221");
+        rtnval.put("action", "conversion");
+        // rtnval.put("site_event_items", "[{\"name\":\"apples\",\"quantity\":\"3\",\"unit_price\":\".5\"},{\"name\":\"oranges\",\"quantity\",\"4\",\"value\":\"8\"}]");
+        //rtnval.put("ios_ifa", "JKI2JO-5958-8188-1BRLO-87322RYAN5693");
         rtnval.put("sdk", "server");
         return rtnval;
 
@@ -61,7 +106,7 @@ public class Request {
 
         String stringToSign = httpMethod + "\n" + host + "\n" + uri + "\n" + timestamp + "\n" + postParams;
 
-        return encode(apiKey, stringToSign);
+        return encode(apiKey, stringToSign).replace("=","");
 
 
     }
