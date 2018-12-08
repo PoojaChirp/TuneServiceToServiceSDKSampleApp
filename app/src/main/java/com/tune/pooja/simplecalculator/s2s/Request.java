@@ -27,8 +27,8 @@ public class Request {
 
         String consumerKey = "";
         String apiKey = "";
-//        String timestamp = String.valueOf(Instant.now().getEpochSecond());
-        String timestamp = "1544306821";//String.valueOf(Instant.now().getEpochSecond());
+        String timestamp = String.valueOf(Instant.now().getEpochSecond());
+//        String timestamp = "1544306821";//String.valueOf(Instant.now().getEpochSecond());
         String host = "199221.measure.mobileapptracking.com";
         String httpMethod = "POST";
         Map<String, String> params = getParams(event);
@@ -106,7 +106,10 @@ public class Request {
 
         String stringToSign = httpMethod + "\n" + host + "\n" + uri + "\n" + timestamp + "\n" + postParams;
 
-        return encode(apiKey, stringToSign).replace("=","");
+        return encode(apiKey, stringToSign)
+                .replace("=","")
+                .replace("+","-")
+                .replace("/","_");
 
 
     }
