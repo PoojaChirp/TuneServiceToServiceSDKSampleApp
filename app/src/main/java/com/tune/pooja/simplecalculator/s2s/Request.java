@@ -25,8 +25,8 @@ public class Request {
         String url = "https://" + host + path + urlEncodeUTF8(params);
         String signature = generateSignature(apiKey, httpMethod, host, url, timestamp, "");
         Map<String, String> headers = getHeaders(consumerKey, signature, timestamp);
-        new CallAPI().execute(url, headers);
-        return false;
+        new CallAPI().execute( headers, url);
+        return true;
     }
 
 
@@ -35,9 +35,9 @@ public class Request {
         Map<String, String> rtnval = new HashMap<>();
         rtnval.put("action", "conversion");
         rtnval.put("action", "conversion");
-        rtnval.put("advertiser_id", "advertiser_id");
+        rtnval.put("advertiser_id", "199221");
         rtnval.put("device_ip", "199.75.210.200");
-        rtnval.put("site_id", "142358");
+        rtnval.put("site_id", "142455");
         rtnval.put("site_event_name", event);
         rtnval.put("site_event_items", "[{\"name\":\"apples\",\"quantity\":\"3\",\"unit_price\":\".5\"},{\"name\":\"oranges\",\"quantity\",\"4\",\"value\":\"8\"}]");
         rtnval.put("ios_ifa", "JKI2JO-5958-8188-1BRLO-87322RYAN5693");

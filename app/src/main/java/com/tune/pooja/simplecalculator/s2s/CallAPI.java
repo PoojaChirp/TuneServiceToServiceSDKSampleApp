@@ -16,7 +16,7 @@ import java.net.URL;
 import java.util.Iterator;
 import java.util.Map;
 
-public class CallAPI extends AsyncTask<Object, String, Boolean> {
+public class CallAPI extends AsyncTask<Object, Integer, Boolean> {
 
     public CallAPI() {
         //set context variables if required
@@ -30,26 +30,22 @@ public class CallAPI extends AsyncTask<Object, String, Boolean> {
     @Override
     protected Boolean doInBackground(Object... params) {
 
-        Map<String, String> headers = (Map<String, String>) params[1];
-        String data = null;//data to post
+        Map<String, String> headers = (Map<String, String>) params[0];
+        String data = "";//data to post
         OutputStream out = null;
 
         try {
-            URL url = new URL((String) params[0]);
+            String urlString = (String) params[1];
+            URL url = new URL(urlString);
             // Create the urlConnection
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-
-
             urlConnection.setDoInput(true);
             urlConnection.setDoOutput(true);
-
-
             urlConnection.setRequestMethod("POST");
-
 
             Iterator it = headers.entrySet().iterator();
             while (it.hasNext()) {
-                Map.Entry pair = (Map.Entry)it.next();
+                Map.Entry pair = (Map.Entry) it.next();
                 urlConnection.setRequestProperty((String) pair.getKey(), (String) pair.getValue());
             }
 
@@ -60,6 +56,16 @@ public class CallAPI extends AsyncTask<Object, String, Boolean> {
                 writer.flush();
             }
 
+            int statusCode = urlConnection.getResponseCode();
+
+
+                InputStream inputStream = new BufferedInputStream(urlConnection.getInputStream());
+
+                String response = convertStreamToString(inputStream);
+                System.out.println(response);
+
+
+            return true;
         } catch (ProtocolException e) {
             e.printStackTrace();
         } catch (MalformedURLException e) {
@@ -67,7 +73,12 @@ public class CallAPI extends AsyncTask<Object, String, Boolean> {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return true;
+
+    }
+
+     String convertStreamToString(java.io.InputStream is) {
+        java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
+        return s.hasNext() ? s.next() : "";
     }
 }
