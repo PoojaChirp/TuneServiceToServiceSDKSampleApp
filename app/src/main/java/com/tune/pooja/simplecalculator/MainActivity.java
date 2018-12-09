@@ -82,17 +82,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btn9.setOnClickListener(this);
         btn0.setOnClickListener(this);
 
-        //S2S implementation
-        Request request = new Request();
-        Map.Entry<String, Map<String, String>> urlDetails = null;
-        try {
-            urlDetails = request.post("math_op_completed");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        StringRequest stringRequest = request.prepareRequest(urlDetails.getValue(), urlDetails.getKey());
 
-        Volley.newRequestQueue(this).add(stringRequest);
     }
 
     @Override
@@ -221,6 +211,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             ITune tune = Tune.getInstance();
             tune.setUserId("userId");
             tune.measureEvent(new TuneEvent(TuneEvent.LEVEL_ACHIEVED).withLevel(5));
+
+            //S2S implementation
+            Request request = new Request();
+            Map.Entry<String, Map<String, String>> urlDetails = null;
+            try {
+                urlDetails = request.post("math_op_completed");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            StringRequest stringRequest = request.prepareRequest(urlDetails.getValue(), urlDetails.getKey());
+
+            Volley.newRequestQueue(this).add(stringRequest);
 
         }
     }
